@@ -3,59 +3,122 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Video Chat</title>
+  <title>Free Random Video Chat</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: sans-serif;
-      text-align: center;
-      background: #f3f4f6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
       padding: 20px;
+    }
+
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 30px 20px;
+      width: 100%;
+      max-width: 800px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      font-size: 1.1rem;
+      margin-bottom: 20px;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #4f46e5;
+      color: white;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #4338ca;
+    }
+
+    iframe {
+      width: 100%;
+      height: 60vh;
+      border: none;
+      border-radius: 10px;
     }
 
     #chat-section {
       display: none;
     }
 
-    button {
-      padding: 12px 24px;
-      font-size: 18px;
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-    }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
 
-    button:hover {
-      background-color: #4338ca;
+      p {
+        font-size: 1rem;
+      }
+
+      button {
+        font-size: 16px;
+        padding: 12px 20px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Welcome/Login Page -->
-  <div id="login-section">
-    <h1>Welcome to Random Video Chat</h1>
+  <div class="container" id="login-section">
+    <h1>Welcome to Free Random Video Chat</h1>
     <p>Click below to get started</p>
     <button onclick="enterChat()">Enter Now</button>
   </div>
 
-  <!-- Video Chat Section -->
-  <div id="chat-section">
-    <h1>Random Video Chat</h1>
+  <div class="container" id="chat-section">
+    <h1>Free Random Video Chat</h1>
     <iframe 
-      src="https://www.hay.fun/video-chat" 
-      width="100%" 
-      height="600px" 
-      frameborder="0" 
-      style="border: none;">
+      id="chat-iframe"
+      src="https://www.hay.fun/video-chat">
     </iframe>
   </div>
 
   <script>
+    let timeoutId;
+
     function enterChat() {
       document.getElementById('login-section').style.display = 'none';
       document.getElementById('chat-section').style.display = 'block';
+
+      if (timeoutId) clearTimeout(timeoutId);
+
+      const timeoutDuration = Math.floor(Math.random() * 60 + 60) * 1000;
+      timeoutId = setTimeout(returnToLogin, timeoutDuration);
+    }
+
+    function returnToLogin() {
+      document.getElementById('chat-section').style.display = 'none';
+      document.getElementById('login-section').style.display = 'block';
+      document.getElementById('chat-iframe').src = "about:blank";
     }
   </script>
 
