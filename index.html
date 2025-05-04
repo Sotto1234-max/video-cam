@@ -3,95 +3,42 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Gossip Chat</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <title>Chat App</title>
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
-
-    body {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    header {
-      background: linear-gradient(to right, #6a11cb, #fc466b);
-      color: white;
-      padding: 10px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: 700;
-    }
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body, html { margin: 0; padding: 0; height: 100%; }
 
     .container {
       display: flex;
-      flex: 1;
-      overflow: hidden;
+      height: 100vh;
     }
 
     .sidebar {
-      width: 300px;
+      width: 250px;
       border-right: 1px solid #ccc;
       padding: 10px;
       overflow-y: auto;
-      background-color: #fff;
+      background-color: #f1f1f1;
     }
 
     .sidebar h3 {
-      font-size: 16px;
       margin-bottom: 10px;
-    }
-
-    .filter-buttons {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-
-    .filter-buttons button {
-      padding: 5px 10px;
-      border: none;
-      border-radius: 20px;
-      cursor: pointer;
-      background: #eee;
-    }
-
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
     }
 
     .user {
-      display: flex;
-      justify-content: space-between;
-      background-color: #cfe2ff;
-      padding: 8px;
-      border-radius: 6px;
-      align-items: center;
+      padding: 10px;
+      margin-bottom: 5px;
+      background-color: #e0e0ff;
+      cursor: pointer;
+      border-radius: 5px;
     }
 
-    .user.female {
-      background-color: #f8d7da;
+    .user.active {
+      background-color: #b3c6ff;
+      font-weight: bold;
     }
 
-    .user-info {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .flag {
-      width: 20px;
-      height: 15px;
-    }
-
-    .chat-section {
+    .chat {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -99,110 +46,110 @@
 
     .chat-header {
       padding: 10px;
-      background: linear-gradient(to right, #fc466b, #6a11cb);
+      background: #4a90e2;
       color: white;
-      font-weight: 600;
+      font-weight: bold;
     }
 
     .chat-body {
       flex: 1;
-      background: #f5f5f5;
       padding: 10px;
       overflow-y: auto;
+      background-color: #f9f9f9;
+    }
+
+    .chat-body .message {
+      margin-bottom: 8px;
     }
 
     .chat-input {
       display: flex;
-      gap: 8px;
-      padding: 10px;
       border-top: 1px solid #ccc;
-      background-color: #fff;
     }
 
     .chat-input input {
       flex: 1;
-      padding: 8px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      border: none;
     }
 
     .chat-input button {
-      padding: 8px 12px;
+      padding: 10px 20px;
       border: none;
-      border-radius: 8px;
-      background-color: #2979ff;
+      background: #4a90e2;
       color: white;
       cursor: pointer;
     }
-
-    .chat-input .emoji,
-    .chat-input .gif,
-    .chat-input .image,
-    .chat-input .send {
-      background-color: #2979ff;
-    }
-
-    .chat-input .image {
-      background-color: #f44336;
-    }
-
   </style>
 </head>
 <body>
-
-  <header>Gossip</header>
-
-  <div class="container">
-    <div class="sidebar">
-      <h3>Online Users 184</h3>
-      <div class="filter-buttons">
-        <button>🌐 All</button>
-        <button>👨‍🦱 Male</button>
-        <button>👩 Female</button>
-      </div>
-      <div class="user-list">
-        <div class="user">
-          <div class="user-info">
-            <strong>sampleuser</strong>
-            <small>18 yrs, Andhra Pradesh, India</small>
-          </div>
-          <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
-        </div>
-        <div class="user">
-          <div class="user-info">
-            <strong>sampley</strong>
-            <small>18 yrs, Andhra Pradesh, India</small>
-          </div>
-          <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
-        </div>
-        <div class="user">
-          <div class="user-info">
-            <strong>Rakesh</strong>
-            <small>27 yrs, Telangana, India</small>
-          </div>
-          <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
-        </div>
-        <!-- Add more users as needed -->
-      </div>
-    </div>
-
-    <div class="chat-section">
-      <div class="chat-header">
-        sampleuser<br/>
-        <small>Male, 18 yrs, Andhra Pradesh India</small>
-      </div>
-      <div class="chat-body">
-        <!-- Chat messages will appear here -->
-      </div>
-      <div class="chat-input">
-        <input type="text" placeholder="Type your message..." />
-        <button class="emoji">😊</button>
-        <button class="gif">GIF</button>
-        <button class="image">📷</button>
-        <button class="send">Send</button>
-      </div>
-    </div>
+<div class="container">
+  <div class="sidebar">
+    <h3>Users</h3>
+    <div class="user" data-username="Alice">Alice</div>
+    <div class="user" data-username="Bob">Bob</div>
+    <div class="user" data-username="Charlie">Charlie</div>
+    <div class="user" data-username="David">David</div>
   </div>
 
+  <div class="chat">
+    <div class="chat-header" id="chatHeader">Select a user</div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-input">
+      <input type="text" id="messageInput" placeholder="Type a message..." disabled />
+      <button onclick="sendMessage()" id="sendBtn" disabled>Send</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const users = document.querySelectorAll('.user');
+  const chatHeader = document.getElementById('chatHeader');
+  const chatBody = document.getElementById('chatBody');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+
+  let activeUser = null;
+  const messageStore = {}; // To store messages per user
+
+  users.forEach(user => {
+    user.addEventListener('click', () => {
+      users.forEach(u => u.classList.remove('active'));
+      user.classList.add('active');
+
+      activeUser = user.dataset.username;
+      chatHeader.textContent = activeUser;
+      messageInput.disabled = false;
+      sendBtn.disabled = false;
+
+      renderMessages();
+    });
+  });
+
+  function renderMessages() {
+    chatBody.innerHTML = '';
+    const messages = messageStore[activeUser] || [];
+    messages.forEach(msg => {
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.textContent = msg;
+      chatBody.appendChild(div);
+    });
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text || !activeUser) return;
+
+    if (!messageStore[activeUser]) {
+      messageStore[activeUser] = [];
+    }
+
+    messageStore[activeUser].push(`You: ${text}`);
+    messageInput.value = '';
+    renderMessages();
+  }
+</script>
 </body>
 </html>
