@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -7,78 +6,176 @@
   <title>Gossip Chat</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-    body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
     header {
       background: linear-gradient(to right, #6a11cb, #fc466b);
-      color: white; padding: 10px; text-align: center; font-size: 24px; font-weight: 700;
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
     }
+
     .login-section {
-      flex: 1; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
     }
+
     .login-section input, .login-section select, .login-section button {
-      padding: 10px; margin: 10px 0; width: 250px;
-      border: 1px solid #ccc; border-radius: 6px; font-size: 16px;
+      padding: 10px;
+      margin: 10px 0;
+      width: 250px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
     }
+
     .login-section button {
-      background-color: #6a11cb; color: white; border: none; cursor: pointer;
+      background-color: #6a11cb;
+      color: white;
+      border: none;
+      cursor: pointer;
     }
-    .container { display: none; flex: 1; overflow: hidden; }
+
+    .container {
+      display: none;
+      flex: 1;
+      overflow: hidden;
+    }
+
     .sidebar {
-      width: 300px; border-right: 1px solid #ccc; padding: 10px;
-      overflow-y: auto; background-color: #fff;
+      width: 300px;
+      border-right: 1px solid #ccc;
+      padding: 10px;
+      overflow-y: auto;
+      background-color: #fff;
     }
-    .sidebar h3 { font-size: 16px; margin-bottom: 10px; }
+
+    .sidebar h3 {
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
     .filter-buttons {
-      display: flex; gap: 10px; margin-bottom: 10px;
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
     }
+
     .filter-buttons button {
-      padding: 5px 10px; border: none; border-radius: 20px;
-      cursor: pointer; background: #eee;
+      padding: 5px 10px;
+      border: none;
+      border-radius: 20px;
+      cursor: pointer;
+      background: #eee;
     }
+
     .user-list {
-      display: flex; flex-direction: column; gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
+
     .user {
-      display: flex; justify-content: space-between;
-      background-color: #cfe2ff; padding: 8px;
-      border-radius: 6px; align-items: center; cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      background-color: #cfe2ff;
+      padding: 8px;
+      border-radius: 6px;
+      align-items: center;
+      cursor: pointer;
     }
-    .user.female { background-color: #f8d7da; }
-    .user.active { background-color: #a3c2ff; }
-    .user-info { display: flex; flex-direction: column; }
-    .flag { width: 20px; height: 15px; }
+
+    .user.female {
+      background-color: #f8d7da;
+    }
+
+    .user.active {
+      background-color: #a3c2ff;
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flag {
+      width: 20px;
+      height: 15px;
+    }
+
     .chat-section {
-      flex: 1; display: flex; flex-direction: column;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
     }
+
     .chat-header {
       padding: 10px;
       background: linear-gradient(to right, #fc466b, #6a11cb);
-      color: white; font-weight: 600;
+      color: white;
+      font-weight: 600;
     }
+
     .chat-body {
-      flex: 1; background: #f5f5f5;
-      padding: 10px; overflow-y: auto;
+      flex: 1;
+      background: #f5f5f5;
+      padding: 10px;
+      overflow-y: auto;
     }
+
     .chat-input {
-      display: flex; gap: 8px; padding: 10px;
-      border-top: 1px solid #ccc; background-color: #fff;
+      display: flex;
+      gap: 8px;
+      padding: 10px;
+      border-top: 1px solid #ccc;
+      background-color: #fff;
     }
+
     .chat-input input {
-      flex: 1; padding: 8px; border-radius: 8px;
+      flex: 1;
+      padding: 8px;
+      border-radius: 8px;
       border: 1px solid #ccc;
     }
+
     .chat-input button {
-      padding: 8px 12px; border: none;
-      border-radius: 8px; background-color: #2979ff;
-      color: white; cursor: pointer;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #2979ff;
+      color: white;
+      cursor: pointer;
     }
-    .chat-input .emoji { background-color: #ff9800; }
-    .chat-input .gif { background-color: #9c27b0; }
-    .chat-input .image { background-color: #f44336; }
-    .message { margin-bottom: 8px; }
-    .message.you { font-weight: bold; }
+
+    .chat-input .image {
+      background-color: #f44336;
+    }
+
+    .message {
+      margin-bottom: 8px;
+    }
+
+    .message.you {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -89,13 +186,11 @@
   <h2>Enter Your Info</h2>
   <input type="text" id="username" placeholder="Your Name" required />
   <input type="number" id="age" placeholder="Your Age" required />
-  <select id="gender" required>
-    <option value="">Select Gender</option>
-    <option value="Male">Male</option>
-    <option value="Female">Female</option>
-  </select>
-  <select id="country" required>
+  <select id="country">
     <option value="">Select Country</option>
+    <option value="India">India</option>
+    <option value="USA">USA</option>
+    <option value="UK">UK</option>
   </select>
   <input type="text" id="region" placeholder="Your Region" required />
   <button onclick="startChat()">Login & Enter</button>
@@ -105,160 +200,123 @@
   <div class="sidebar">
     <h3>Online Users 184</h3>
     <div class="filter-buttons">
-      <button onclick="filterUsers('all')">🌐 All</button>
-      <button onclick="filterUsers('male')">👨‍🦱 Male</button>
-      <button onclick="filterUsers('female')">👩 Female</button>
+      <button>🌐 All</button>
+      <button>👨‍🦱 Male</button>
+      <button>👩 Female</button>
     </div>
-    <div class="user-list" id="userList"></div>
+    <div class="user-list" id="userList">
+      <div class="user" data-username="sampleuser" data-info="Male, 18 yrs, Andhra Pradesh India">
+        <div class="user-info">
+          <strong>sampleuser</strong>
+          <small>18 yrs, Andhra Pradesh, India</small>
+        </div>
+        <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
+      </div>
+      <div class="user" data-username="sampley" data-info="Female, 18 yrs, Andhra Pradesh India">
+        <div class="user-info">
+          <strong>sampley</strong>
+          <small>18 yrs, Andhra Pradesh, India</small>
+        </div>
+        <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
+      </div>
+      <div class="user" data-username="Rakesh" data-info="Male, 27 yrs, Telangana India">
+        <div class="user-info">
+          <strong>Rakesh</strong>
+          <small>27 yrs, Telangana, India</small>
+        </div>
+        <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
+      </div>
+    </div>
   </div>
 
   <div class="chat-section">
-    <div class="chat-header" id="chatHeader">Select a user<br/><small></small></div>
-    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-header" id="chatHeader">
+      Select a user<br/>
+      <small></small>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <!-- Messages appear here -->
+    </div>
     <div class="chat-input">
       <input type="text" id="messageInput" placeholder="Type your message..." disabled />
-      <button class="emoji" onclick="insertEmoji()">😊</button>
-      <button class="gif" onclick="sendGIF()">GIF</button>
-      <button class="image" onclick="sendImage()">📷</button>
+      <button class="emoji">😊</button>
+      <button class="gif">GIF</button>
+      <button class="image">📷</button>
       <button class="send" onclick="sendMessage()" id="sendBtn" disabled>Send</button>
     </div>
   </div>
 </div>
 
 <script>
-  const countrySelect = document.getElementById("country");
-  const userList = document.getElementById('userList');
+  let activeUser = null;
+  const messageStore = {};
+  const users = document.querySelectorAll('.user');
+  const chatHeader = document.getElementById('chatHeader');
   const chatBody = document.getElementById('chatBody');
   const messageInput = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
-  const chatHeader = document.getElementById('chatHeader');
 
-  let activeUser = null;
-  let allUsers = [];
-  const messageStore = {};
   let currentUserInfo = {};
-
-  async function loadCountries() {
-    const res = await fetch("https://restcountries.com/v3.1/all");
-    const countries = await res.json();
-    countries.sort((a, b) => a.name.common.localeCompare(b.name.common));
-    countries.forEach(c => {
-      const option = document.createElement("option");
-      option.value = c.cca2.toLowerCase();
-      option.text = c.name.common;
-      countrySelect.appendChild(option);
-    });
-  }
-
-  function insertEmoji() {
-    messageInput.value += '😊';
-    messageInput.focus();
-  }
-
-  function sendGIF() {
-    if (!activeUser) return;
-    const gifURL = 'https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif';
-    appendMessage(`You sent a GIF: ${gifURL}`);
-    messageStore[activeUser].push(`You sent a GIF: ${gifURL}`);
-    renderMessages();
-  }
-
-  function sendImage() {
-    if (!activeUser) return;
-    const imageURL = 'https://via.placeholder.com/150';
-    appendMessage(`You sent an image: ${imageURL}`);
-    messageStore[activeUser].push(`You sent an image: ${imageURL}`);
-    renderMessages();
-  }
-
-  function filterUsers(gender) {
-    const users = document.querySelectorAll('.user');
-    users.forEach(u => {
-      if (gender === 'all' || u.classList.contains(gender)) {
-        u.style.display = 'flex';
-      } else {
-        u.style.display = 'none';
-      }
-    });
-  }
-
-  function appendMessage(msg) {
-    const div = document.createElement('div');
-    div.className = 'message';
-    div.textContent = msg;
-    chatBody.appendChild(div);
-    chatBody.scrollTop = chatBody.scrollHeight;
-  }
 
   function startChat() {
     const name = document.getElementById('username').value.trim();
     const age = document.getElementById('age').value.trim();
-    const gender = document.getElementById('gender').value;
-    const countryCode = document.getElementById('country').value;
-    const countryName = document.getElementById('country').selectedOptions[0].text;
+    const country = document.getElementById('country').value;
     const region = document.getElementById('region').value.trim();
 
-    if (!name || !age || !gender || !countryCode || !region) {
+    if (!name || !age || !country || !region) {
       alert("Please fill all fields");
       return;
     }
 
-    currentUserInfo = { name, age, gender, region, countryCode, countryName };
+    currentUserInfo = { name, age, country, region };
 
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('chatContainer').style.display = 'flex';
 
-    chatHeader.innerHTML = `Welcome, ${name}<br/><small>${age} yrs, ${region}, ${countryName}</small>`;
-
-    const all = [currentUserInfo, ...allUsers];
-    all.forEach(u => createUserElement(u));
+    chatHeader.innerHTML = `Welcome, ${name}<br/><small>${age} yrs, ${region}, ${country}</small>`;
   }
 
-  function createUserElement(user) {
-    const userDiv = document.createElement('div');
-    userDiv.className = `user ${user.gender.toLowerCase()}`;
-    userDiv.dataset.username = user.name;
-    userDiv.innerHTML = `
-      <div class="user-info">
-        <strong>${user.name}</strong>
-        <small>${user.age} yrs, ${user.region}, ${user.countryName}</small>
-      </div>
-      <img src="https://flagcdn.com/${user.countryCode}.svg" class="flag" />
-    `;
-    userDiv.addEventListener('click', () => {
-      document.querySelectorAll('.user').forEach(u => u.classList.remove('active'));
-      userDiv.classList.add('active');
-      activeUser = user.name;
-      chatHeader.innerHTML = `${user.name}<br/><small>${user.gender}, ${user.age} yrs, ${user.region}, ${user.countryName}</small>`;
+  users.forEach(user => {
+    user.addEventListener('click', () => {
+      users.forEach(u => u.classList.remove('active'));
+      user.classList.add('active');
+
+      activeUser = user.dataset.username;
+      const info = user.dataset.info;
+
+      chatHeader.innerHTML = `${activeUser}<br/><small>${info}</small>`;
       messageInput.disabled = false;
       sendBtn.disabled = false;
+
       renderMessages();
     });
-    userList.appendChild(userDiv);
-  }
+  });
 
   function renderMessages() {
     chatBody.innerHTML = '';
     const messages = messageStore[activeUser] || [];
-    messages.forEach(msg => appendMessage(msg));
+    messages.forEach(msg => {
+      const div = document.createElement('div');
+      div.className = 'message';
+      div.textContent = msg;
+      chatBody.appendChild(div);
+    });
+    chatBody.scrollTop = chatBody.scrollHeight;
   }
 
   function sendMessage() {
     const text = messageInput.value.trim();
     if (!text || !activeUser) return;
-    if (!messageStore[activeUser]) messageStore[activeUser] = [];
+
+    if (!messageStore[activeUser]) {
+      messageStore[activeUser] = [];
+    }
+
     messageStore[activeUser].push(`You: ${text}`);
     messageInput.value = '';
     renderMessages();
   }
-
-  loadCountries();
-
-  // Sample dummy users
-  allUsers = [
-    { name: "Alice", age: 22, gender: "Female", region: "NY", countryCode: "us", countryName: "United States" },
-    { name: "Bob", age: 28, gender: "Male", region: "London", countryCode: "gb", countryName: "United Kingdom" }
-  ];
 </script>
 
 </body>
