@@ -64,7 +64,7 @@
       display: flex; gap: 8px; padding: 10px;
       border-top: 1px solid #ccc; background-color: #fff;
     }
-    .chat-input input[type="text"] {
+    .chat-input input {
       flex: 1; padding: 8px; border-radius: 8px;
       border: 1px solid #ccc;
     }
@@ -73,11 +73,10 @@
       border-radius: 8px; background-color: #2979ff;
       color: white; cursor: pointer;
     }
-    .chat-input .image { background-color: #f44336; }
-    .chat-input .gif { background-color: #4caf50; }
     .chat-input .emoji { background-color: #ff9800; }
+    .chat-input .gif { background-color: #9c27b0; }
+    .chat-input .image { background-color: #f44336; }
     .message { margin-bottom: 8px; }
-    .message img { max-width: 200px; border-radius: 10px; }
     .message.you { font-weight: bold; }
   </style>
 </head>
@@ -105,9 +104,9 @@
   <div class="sidebar">
     <h3>Online Users 184</h3>
     <div class="filter-buttons">
-      <button>🌐 All</button>
-      <button>👨‍🦱 Male</button>
-      <button>👩 Female</button>
+      <button onclick="filterUsers('all')">🌐 All</button>
+      <button onclick="filterUsers('male')">👨‍🦱 Male</button>
+      <button onclick="filterUsers('female')">👩 Female</button>
     </div>
     <div class="user-list" id="userList"></div>
   </div>
@@ -117,10 +116,9 @@
     <div class="chat-body" id="chatBody"></div>
     <div class="chat-input">
       <input type="text" id="messageInput" placeholder="Type your message..." disabled />
-      <input type="file" id="imageInput" accept="image/*" style="display: none" />
-      <button class="emoji" onclick="addEmoji()">😊</button>
-      <button class="gif" onclick="sendGif()">GIF</button>
-      <button class="image" onclick="document.getElementById('imageInput').click()">📷</button>
+      <button class="emoji" onclick="insertEmoji()">😊</button>
+      <button class="gif" onclick="sendGIF()">GIF</button>
+      <button class="image" onclick="sendImage()">📷</button>
       <button class="send" onclick="sendMessage()" id="sendBtn" disabled>Send</button>
     </div>
   </div>
@@ -128,17 +126,16 @@
 
 <script>
   const countrySelect = document.getElementById("country");
-  const userList = document.getElementById("userList");
-  const chatHeader = document.getElementById('chatHeader');
+  const userList = document.getElementById('userList');
   const chatBody = document.getElementById('chatBody');
   const messageInput = document.getElementById('messageInput');
   const sendBtn = document.getElementById('sendBtn');
-  const imageInput = document.getElementById('imageInput');
+  const chatHeader = document.getElementById('chatHeader');
 
-  let currentUserInfo = {};
   let activeUser = null;
+  let allUsers = [];
   const messageStore = {};
-  const allUsers = [];
+  let currentUserInfo = {};
 
   async function loadCountries() {
     const res = await fetch("https://restcountries.com/v3.1/all");
@@ -148,12 +145,49 @@
       const option = document.createElement("option");
       option.value = c.cca2.toLowerCase();
       option.text = c.name.common;
-      option.dataset.name = c.name.common;
       countrySelect.appendChild(option);
     });
   }
 
-  loadCountries();
+  function insertEmoji() {
+    messageInput.value += '😊';
+    messageInput.focus();
+  }
+
+  function sendGIF() {
+    if (!activeUser) return;
+    const gifURL = 'https://media.giphy.com/media/l0MYC0LajbaPoEADu/giphy.gif';
+    appendMessage(`You sent a GIF: ${gifURL}`);
+    messageStore[activeUser].push(`You sent a GIF: ${gifURL}`);
+    renderMessages();
+  }
+
+  function sendImage() {
+    if (!activeUser) return;
+    const imageURL = 'https://via.placeholder.com/150';
+    appendMessage(`You sent an image: ${imageURL}`);
+    messageStore[activeUser].push(`You sent an image: ${imageURL}`);
+    renderMessages();
+  }
+
+  function filterUsers(gender) {
+    const users = document.querySelectorAll('.user');
+    users.forEach(u => {
+      if (gender === 'all' || u.classList.contains(gender)) {
+        u.style.display = 'flex';
+      } else {
+        u.style.display = 'none';
+      }
+    });
+  }
+
+  function appendMessage(msg) {
+    const div = document.createElement('div');
+    div.className = 'message';
+    div.textContent = msg;
+    chatBody.appendChild(div);
+    chatBody.scrollTop = chatBody.scrollHeight;
+  }
 
   function startChat() {
     const name = document.getElementById('username').value.trim();
@@ -173,17 +207,13 @@
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('chatContainer').style.display = 'flex';
 
-    const currentUser = addUserToList(currentUserInfo);
-    allUsers.push(currentUserInfo);
-
-    allUsers.forEach(user => {
-      if (user.name !== currentUserInfo.name) addUserToList(user);
-    });
-
     chatHeader.innerHTML = `Welcome, ${name}<br/><small>${age} yrs, ${region}, ${countryName}</small>`;
+
+    const all = [currentUserInfo, ...allUsers];
+    all.forEach(u => createUserElement(u));
   }
 
-  function addUserToList(user) {
+  function createUserElement(user) {
     const userDiv = document.createElement('div');
     userDiv.className = `user ${user.gender.toLowerCase()}`;
     userDiv.dataset.username = user.name;
@@ -198,31 +228,18 @@
       document.querySelectorAll('.user').forEach(u => u.classList.remove('active'));
       userDiv.classList.add('active');
       activeUser = user.name;
+      chatHeader.innerHTML = `${user.name}<br/><small>${user.gender}, ${user.age} yrs, ${user.region}, ${user.countryName}</small>`;
       messageInput.disabled = false;
       sendBtn.disabled = false;
-      chatHeader.innerHTML = `${user.name}<br/><small>${user.gender}, ${user.age} yrs, ${user.region}, ${user.countryName}</small>`;
       renderMessages();
     });
     userList.appendChild(userDiv);
-    return userDiv;
   }
 
   function renderMessages() {
     chatBody.innerHTML = '';
     const messages = messageStore[activeUser] || [];
-    messages.forEach(msg => {
-      const div = document.createElement('div');
-      div.className = 'message';
-      if (msg.startsWith("img:")) {
-        const img = document.createElement('img');
-        img.src = msg.slice(4);
-        div.appendChild(img);
-      } else {
-        div.textContent = msg;
-      }
-      chatBody.appendChild(div);
-    });
-    chatBody.scrollTop = chatBody.scrollHeight;
+    messages.forEach(msg => appendMessage(msg));
   }
 
   function sendMessage() {
@@ -234,33 +251,13 @@
     renderMessages();
   }
 
-  function addEmoji() {
-    messageInput.value += "😊";
-  }
+  loadCountries();
 
-  function sendGif() {
-    if (!activeUser) return;
-    fetch("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny")
-      .then(res => res.json())
-      .then(data => {
-        const gifUrl = data.data.images.fixed_height.url;
-        if (!messageStore[activeUser]) messageStore[activeUser] = [];
-        messageStore[activeUser].push(`img:${gifUrl}`);
-        renderMessages();
-      });
-  }
-
-  imageInput.addEventListener('change', () => {
-    const file = imageInput.files[0];
-    if (!file || !activeUser) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      if (!messageStore[activeUser]) messageStore[activeUser] = [];
-      messageStore[activeUser].push(`img:${reader.result}`);
-      renderMessages();
-    };
-    reader.readAsDataURL(file);
-  });
+  // Sample dummy users
+  allUsers = [
+    { name: "Alice", age: 22, gender: "Female", region: "NY", countryCode: "us", countryName: "United States" },
+    { name: "Bob", age: 28, gender: "Male", region: "London", countryCode: "gb", countryName: "United Kingdom" }
+  ];
 </script>
 
 </body>
