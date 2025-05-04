@@ -1,44 +1,69 @@
-// server.js
 const express = require('express');
-const http = require('http');
-const socketIO = require('socket.io');
-const cors = require('cors');
 const app = express();
-const server = http.createServer(app);
-const io = socketIO(server);
+const http = require('http').createServer(app);
+const cors = require('cors');
+const io = require('socket.io')(http, {
+  cors: { origin: '*' }
+});
 
 app.use(cors());
-app.use(express.static('public')); // assumes your HTML is in /public
+app.use(express.static('public')); // serve HTML, CSS, JS from /public
 
-const users = {};
+const users = {}; // socket.id => user info
 
-io.on('connection', (socket) => {
-  console.log('New connection:', socket.id);
+// User Connection
+io.on('connection', socket => {
+  console.log('User connected:', socket.id);
 
-  socket.on('register-user', (userData) => {
-    users[socket.id] = userData;
-    users[socket.id].id = socket.id;
-    io.emit('user-list', Object.values(users));
+  // User Registration
+  socket.on('register-user', (userInfo) => {
+    if (!userInfo.name || !userInfo.age || !userInfo.gender || !userInfo.countryCode || !userInfo.region) {
+      socket.emit('error', { message: 'Invalid user information. Please fill all fields.' });
+      return;
+    }
+
+    // Register user
+    users[socket.id] = { id: socket.id, ...userInfo };
+    console.log('Registered:', users[socket.id]);
+
+    // Emit user list to all clients
+    sendUserList();
   });
 
+  // Private Message
   socket.on('private-message', ({ to, message }) => {
+    const fromUser = users[socket.id];
     if (io.sockets.sockets.get(to)) {
+      // Send private message with timestamp
       io.to(to).emit('private-message', {
         from: socket.id,
-        fromName: users[socket.id]?.name || 'Unknown',
+        fromName: fromUser.name,
         message,
+        timestamp: Date.now() // Add timestamp to message
       });
+    } else {
+      socket.emit('error', { message: 'User not found.' });
     }
   });
 
+  // Disconnect
   socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
     delete users[socket.id];
-    io.emit('user-list', Object.values(users));
-    console.log('Disconnected:', socket.id);
+    sendUserList();
   });
+
+  // Send updated user list to all clients
+  function sendUserList() {
+    const userList = Object.values(users).map(u => ({
+      id: u.id,
+      name: u.name
+    }));
+    io.emit('user-list', userList);
+  }
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`Server running on http://localhost:${PORT}`);
+http.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
