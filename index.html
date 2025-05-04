@@ -2,126 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Free Random Video Chat</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html, body {
-      height: 100%;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #667eea, #764ba2);
-      color: #fff;
-    }
-
-    .container {
-      width: 100%;
-      height: 100%;
-      padding: 20px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(12px);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    h1 {
-      font-size: 2rem;
-      margin-bottom: 10px;
-      text-align: center;
-    }
-
-    p {
-      font-size: 1.1rem;
-      margin-bottom: 20px;
-      text-align: center;
-    }
-
-    button {
-      padding: 14px 28px;
-      font-size: 18px;
-      background-color: #4f46e5;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    button:hover {
-      background-color: #4338ca;
-    }
-
-    iframe {
-      flex: 1;
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      margin-top: 20px;
-    }
-
-    #chat-section {
-      display: none;
-    }
-
-    @media (max-width: 600px) {
-      h1 {
-        font-size: 1.5rem;
-      }
-
-      p {
-        font-size: 1rem;
-      }
-
-      button {
-        font-size: 16px;
-        padding: 12px 20px;
-      }
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GossipChat Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-gray-900 text-white h-screen flex flex-col">
 
-  <!-- Welcome/Login Page -->
-  <div class="container" id="login-section">
-    <h1>Welcome to Free Random Video Chat</h1>
-    <p>Click below to get started</p>
-    <button onclick="enterChat()">Enter Now</button>
-  </div>
+  <!-- Header -->
+  <header class="bg-gray-800 p-4 text-center text-xl font-bold">
+    GossipChat
+  </header>
 
-  <!-- Video Chat Section -->
-  <div class="container" id="chat-section">
-    <h1>Free Random Video Chat</h1>
-    <iframe 
-      id="chat-iframe"
-      src="https://chatingly.com/new-stranger">
-    </iframe>
-  </div>
+  <main class="flex flex-1 overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-64 bg-gray-800 p-4 overflow-y-auto">
+      <h2 class="text-lg font-semibold mb-4">Users</h2>
+      <ul id="userList" class="space-y-2">
+        <!-- Dynamic Users -->
+      </ul>
+    </aside>
+
+    <!-- Chat Area -->
+    <section class="flex-1 flex flex-col p-4">
+      <div id="chatHeader" class="font-semibold text-lg mb-2">Select a user to chat</div>
+      
+      <div id="chatBox" class="flex-1 bg-gray-700 rounded p-3 overflow-y-auto mb-4">
+        <!-- Chat messages will appear here -->
+      </div>
+
+      <div class="flex space-x-2">
+        <input id="messageInput" type="text" placeholder="Type a message" class="flex-1 p-2 rounded bg-gray-800 text-white border border-gray-600" />
+        <button id="sendBtn" class="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Send</button>
+      </div>
+    </section>
+  </main>
 
   <script>
-    let timeoutId;
+    const users = ['Alice', 'Bob', 'Charlie', 'David', 'Eva'];
+    const userList = document.getElementById('userList');
+    const chatBox = document.getElementById('chatBox');
+    const chatHeader = document.getElementById('chatHeader');
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('messageInput');
 
-    function enterChat() {
-      document.getElementById('login-section').style.display = 'none';
-      document.getElementById('chat-section').style.display = 'flex';
+    let currentUser = null;
+    const chats = {};
 
-      if (timeoutId) clearTimeout(timeoutId);
+    users.forEach(user => {
+      const li = document.createElement('li');
+      li.textContent = user;
+      li.className = 'cursor-pointer p-2 rounded hover:bg-gray-600';
+      li.onclick = () => {
+        currentUser = user;
+        chatHeader.textContent = `Chatting with ${user}`;
+        renderMessages();
+      };
+      userList.appendChild(li);
+    });
 
-      const timeoutDuration = Math.floor(Math.random() * 60 + 60) * 1000;
-      timeoutId = setTimeout(returnToLogin, timeoutDuration);
-    }
+    sendBtn.onclick = () => {
+      if (!currentUser || !messageInput.value.trim()) return;
+      const msg = { from: 'You', text: messageInput.value };
+      chats[currentUser] = chats[currentUser] || [];
+      chats[currentUser].push(msg);
+      messageInput.value = '';
+      renderMessages();
+    };
 
-    function returnToLogin() {
-      document.getElementById('chat-section').style.display = 'none';
-      document.getElementById('login-section').style.display = 'flex';
-      document.getElementById('chat-iframe').src = "about:blank";
+    function renderMessages() {
+      chatBox.innerHTML = '';
+      const messages = chats[currentUser] || [];
+      messages.forEach(msg => {
+        const div = document.createElement('div');
+        div.className = 'mb-2';
+        div.innerHTML = `<strong>${msg.from}:</strong> ${msg.text}`;
+        chatBox.appendChild(div);
+      });
+      chatBox.scrollTop = chatBox.scrollHeight;
     }
   </script>
-
 </body>
 </html>
