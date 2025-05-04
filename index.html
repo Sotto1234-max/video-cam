@@ -3,42 +3,100 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Chat App</title>
+  <title>Gossip Chat</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; font-family: Arial, sans-serif; }
-    body, html { margin: 0; padding: 0; height: 100%; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    header {
+      background: linear-gradient(to right, #6a11cb, #fc466b);
+      color: white;
+      padding: 10px;
+      text-align: center;
+      font-size: 24px;
+      font-weight: 700;
+    }
 
     .container {
       display: flex;
-      height: 100vh;
+      flex: 1;
+      overflow: hidden;
     }
 
     .sidebar {
-      width: 250px;
+      width: 300px;
       border-right: 1px solid #ccc;
       padding: 10px;
       overflow-y: auto;
-      background-color: #f1f1f1;
+      background-color: #fff;
     }
 
     .sidebar h3 {
+      font-size: 16px;
       margin-bottom: 10px;
     }
 
-    .user {
-      padding: 10px;
-      margin-bottom: 5px;
-      background-color: #e0e0ff;
+    .filter-buttons {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .filter-buttons button {
+      padding: 5px 10px;
+      border: none;
+      border-radius: 20px;
       cursor: pointer;
-      border-radius: 5px;
+      background: #eee;
+    }
+
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .user {
+      display: flex;
+      justify-content: space-between;
+      background-color: #cfe2ff;
+      padding: 8px;
+      border-radius: 6px;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .user.female {
+      background-color: #f8d7da;
     }
 
     .user.active {
-      background-color: #b3c6ff;
-      font-weight: bold;
+      background-color: #a3c2ff;
     }
 
-    .chat {
+    .user-info {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flag {
+      width: 20px;
+      height: 15px;
+    }
+
+    .chat-section {
       flex: 1;
       display: flex;
       flex-direction: column;
@@ -46,58 +104,106 @@
 
     .chat-header {
       padding: 10px;
-      background: #4a90e2;
+      background: linear-gradient(to right, #fc466b, #6a11cb);
       color: white;
-      font-weight: bold;
+      font-weight: 600;
     }
 
     .chat-body {
       flex: 1;
+      background: #f5f5f5;
       padding: 10px;
       overflow-y: auto;
-      background-color: #f9f9f9;
-    }
-
-    .chat-body .message {
-      margin-bottom: 8px;
     }
 
     .chat-input {
       display: flex;
+      gap: 8px;
+      padding: 10px;
       border-top: 1px solid #ccc;
+      background-color: #fff;
     }
 
     .chat-input input {
       flex: 1;
-      padding: 10px;
-      border: none;
+      padding: 8px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
 
     .chat-input button {
-      padding: 10px 20px;
+      padding: 8px 12px;
       border: none;
-      background: #4a90e2;
+      border-radius: 8px;
+      background-color: #2979ff;
       color: white;
       cursor: pointer;
+    }
+
+    .chat-input .image {
+      background-color: #f44336;
+    }
+
+    .message {
+      margin-bottom: 8px;
+    }
+
+    .message.you {
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
+
+<header>Gossip</header>
+
 <div class="container">
   <div class="sidebar">
-    <h3>Users</h3>
-    <div class="user" data-username="Alice">Alice</div>
-    <div class="user" data-username="Bob">Bob</div>
-    <div class="user" data-username="Charlie">Charlie</div>
-    <div class="user" data-username="David">David</div>
+    <h3>Online Users 184</h3>
+    <div class="filter-buttons">
+      <button>🌐 All</button>
+      <button>👨‍🦱 Male</button>
+      <button>👩 Female</button>
+    </div>
+    <div class="user-list" id="userList">
+      <div class="user" data-username="sampleuser" data-info="Male, 18 yrs, Andhra Pradesh India">
+        <div class="user-info">
+          <strong>sampleuser</strong>
+          <small>18 yrs, Andhra Pradesh, India</small>
+        </div>
+        <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
+      </div>
+      <div class="user" data-username="sampley" data-info="Female, 18 yrs, Andhra Pradesh India">
+        <div class="user-info">
+          <strong>sampley</strong>
+          <small>18 yrs, Andhra Pradesh, India</small>
+        </div>
+        <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
+      </div>
+      <div class="user" data-username="Rakesh" data-info="Male, 27 yrs, Telangana India">
+        <div class="user-info">
+          <strong>Rakesh</strong>
+          <small>27 yrs, Telangana, India</small>
+        </div>
+        <img src="https://flagcdn.com/in.svg" alt="India" class="flag">
+      </div>
+    </div>
   </div>
 
-  <div class="chat">
-    <div class="chat-header" id="chatHeader">Select a user</div>
-    <div class="chat-body" id="chatBody"></div>
+  <div class="chat-section">
+    <div class="chat-header" id="chatHeader">
+      Select a user<br/>
+      <small></small>
+    </div>
+    <div class="chat-body" id="chatBody">
+      <!-- Messages appear here -->
+    </div>
     <div class="chat-input">
-      <input type="text" id="messageInput" placeholder="Type a message..." disabled />
-      <button onclick="sendMessage()" id="sendBtn" disabled>Send</button>
+      <input type="text" id="messageInput" placeholder="Type your message..." disabled />
+      <button class="emoji">😊</button>
+      <button class="gif">GIF</button>
+      <button class="image">📷</button>
+      <button class="send" onclick="sendMessage()" id="sendBtn" disabled>Send</button>
     </div>
   </div>
 </div>
@@ -110,7 +216,7 @@
   const sendBtn = document.getElementById('sendBtn');
 
   let activeUser = null;
-  const messageStore = {}; // To store messages per user
+  const messageStore = {};
 
   users.forEach(user => {
     user.addEventListener('click', () => {
@@ -118,7 +224,9 @@
       user.classList.add('active');
 
       activeUser = user.dataset.username;
-      chatHeader.textContent = activeUser;
+      const info = user.dataset.info;
+
+      chatHeader.innerHTML = `${activeUser}<br/><small>${info}</small>`;
       messageInput.disabled = false;
       sendBtn.disabled = false;
 
@@ -151,5 +259,6 @@
     renderMessages();
   }
 </script>
+
 </body>
 </html>
