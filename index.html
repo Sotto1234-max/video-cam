@@ -64,7 +64,7 @@
       display: flex; gap: 8px; padding: 10px;
       border-top: 1px solid #ccc; background-color: #fff;
     }
-    .chat-input input {
+    .chat-input input[type="text"] {
       flex: 1; padding: 8px; border-radius: 8px;
       border: 1px solid #ccc;
     }
@@ -74,7 +74,10 @@
       color: white; cursor: pointer;
     }
     .chat-input .image { background-color: #f44336; }
+    .chat-input .gif { background-color: #4caf50; }
+    .chat-input .emoji { background-color: #ff9800; }
     .message { margin-bottom: 8px; }
+    .message img { max-width: 200px; border-radius: 10px; }
     .message.you { font-weight: bold; }
   </style>
 </head>
@@ -106,9 +109,7 @@
       <button>👨‍🦱 Male</button>
       <button>👩 Female</button>
     </div>
-    <div class="user-list" id="userList">
-      <!-- Dynamic user list -->
-    </div>
+    <div class="user-list" id="userList"></div>
   </div>
 
   <div class="chat-section">
@@ -116,9 +117,10 @@
     <div class="chat-body" id="chatBody"></div>
     <div class="chat-input">
       <input type="text" id="messageInput" placeholder="Type your message..." disabled />
-      <button class="emoji">😊</button>
-      <button class="gif">GIF</button>
-      <button class="image">📷</button>
+      <input type="file" id="imageInput" accept="image/*" style="display: none" />
+      <button class="emoji" onclick="addEmoji()">😊</button>
+      <button class="gif" onclick="sendGif()">GIF</button>
+      <button class="image" onclick="document.getElementById('imageInput').click()">📷</button>
       <button class="send" onclick="sendMessage()" id="sendBtn" disabled>Send</button>
     </div>
   </div>
@@ -126,6 +128,17 @@
 
 <script>
   const countrySelect = document.getElementById("country");
+  const userList = document.getElementById("userList");
+  const chatHeader = document.getElementById('chatHeader');
+  const chatBody = document.getElementById('chatBody');
+  const messageInput = document.getElementById('messageInput');
+  const sendBtn = document.getElementById('sendBtn');
+  const imageInput = document.getElementById('imageInput');
+
+  let currentUserInfo = {};
+  let activeUser = null;
+  const messageStore = {};
+  const allUsers = [];
 
   async function loadCountries() {
     const res = await fetch("https://restcountries.com/v3.1/all");
@@ -141,16 +154,6 @@
   }
 
   loadCountries();
-
-  let activeUser = null;
-  const messageStore = {};
-  const chatHeader = document.getElementById('chatHeader');
-  const chatBody = document.getElementById('chatBody');
-  const messageInput = document.getElementById('messageInput');
-  const sendBtn = document.getElementById('sendBtn');
-  const userList = document.getElementById('userList');
-
-  let currentUserInfo = {};
 
   function startChat() {
     const name = document.getElementById('username').value.trim();
@@ -170,31 +173,38 @@
     document.getElementById('loginSection').style.display = 'none';
     document.getElementById('chatContainer').style.display = 'flex';
 
-    chatHeader.innerHTML = `Welcome, ${name}<br/><small>${age} yrs, ${region}, ${countryName}</small>`;
+    const currentUser = addUserToList(currentUserInfo);
+    allUsers.push(currentUserInfo);
 
+    allUsers.forEach(user => {
+      if (user.name !== currentUserInfo.name) addUserToList(user);
+    });
+
+    chatHeader.innerHTML = `Welcome, ${name}<br/><small>${age} yrs, ${region}, ${countryName}</small>`;
+  }
+
+  function addUserToList(user) {
     const userDiv = document.createElement('div');
-    userDiv.className = `user ${gender.toLowerCase()}`;
-    userDiv.dataset.username = name;
-    userDiv.dataset.info = `${gender}, ${age} yrs, ${region}, ${countryName}`;
+    userDiv.className = `user ${user.gender.toLowerCase()}`;
+    userDiv.dataset.username = user.name;
     userDiv.innerHTML = `
       <div class="user-info">
-        <strong>${name}</strong>
-        <small>${age} yrs, ${region}, ${countryName}</small>
+        <strong>${user.name}</strong>
+        <small>${user.age} yrs, ${user.region}, ${user.countryName}</small>
       </div>
-      <img src="https://flagcdn.com/${countryCode}.svg" class="flag" />
+      <img src="https://flagcdn.com/${user.countryCode}.svg" class="flag" />
     `;
-
     userDiv.addEventListener('click', () => {
       document.querySelectorAll('.user').forEach(u => u.classList.remove('active'));
       userDiv.classList.add('active');
-      activeUser = name;
-      chatHeader.innerHTML = `${name}<br/><small>${gender}, ${age} yrs, ${region}, ${countryName}</small>`;
+      activeUser = user.name;
       messageInput.disabled = false;
       sendBtn.disabled = false;
+      chatHeader.innerHTML = `${user.name}<br/><small>${user.gender}, ${user.age} yrs, ${user.region}, ${user.countryName}</small>`;
       renderMessages();
     });
-
     userList.appendChild(userDiv);
+    return userDiv;
   }
 
   function renderMessages() {
@@ -203,7 +213,13 @@
     messages.forEach(msg => {
       const div = document.createElement('div');
       div.className = 'message';
-      div.textContent = msg;
+      if (msg.startsWith("img:")) {
+        const img = document.createElement('img');
+        img.src = msg.slice(4);
+        div.appendChild(img);
+      } else {
+        div.textContent = msg;
+      }
       chatBody.appendChild(div);
     });
     chatBody.scrollTop = chatBody.scrollHeight;
@@ -212,15 +228,39 @@
   function sendMessage() {
     const text = messageInput.value.trim();
     if (!text || !activeUser) return;
-
-    if (!messageStore[activeUser]) {
-      messageStore[activeUser] = [];
-    }
-
+    if (!messageStore[activeUser]) messageStore[activeUser] = [];
     messageStore[activeUser].push(`You: ${text}`);
     messageInput.value = '';
     renderMessages();
   }
+
+  function addEmoji() {
+    messageInput.value += "😊";
+  }
+
+  function sendGif() {
+    if (!activeUser) return;
+    fetch("https://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=funny")
+      .then(res => res.json())
+      .then(data => {
+        const gifUrl = data.data.images.fixed_height.url;
+        if (!messageStore[activeUser]) messageStore[activeUser] = [];
+        messageStore[activeUser].push(`img:${gifUrl}`);
+        renderMessages();
+      });
+  }
+
+  imageInput.addEventListener('change', () => {
+    const file = imageInput.files[0];
+    if (!file || !activeUser) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (!messageStore[activeUser]) messageStore[activeUser] = [];
+      messageStore[activeUser].push(`img:${reader.result}`);
+      renderMessages();
+    };
+    reader.readAsDataURL(file);
+  });
 </script>
 
 </body>
