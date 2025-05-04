@@ -259,6 +259,49 @@
     { name: "Bob", age: 28, gender: "Male", region: "London", countryCode: "gb", countryName: "United Kingdom" }
   ];
 </script>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+
+  // Register after login
+  function startChat() {
+    // ... your existing logic ...
+    currentUserInfo = { name, age, gender, region, countryCode, countryName };
+
+    socket.emit('register-user', currentUserInfo);
+    // ... rest as before ...
+  }
+
+  socket.on('user-list', (users) => {
+    userList.innerHTML = '';
+    users
+      .filter(u => u.name !== currentUserInfo.name)
+      .forEach(u => createUserElement(u));
+  });
+
+  socket.on('private-message', ({ from, fromName, message }) => {
+    if (!messageStore[fromName]) messageStore[fromName] = [];
+    messageStore[fromName].push(`${fromName}: ${message}`);
+    if (activeUser === fromName) renderMessages();
+  });
+
+  function sendMessage() {
+    const text = messageInput.value.trim();
+    if (!text || !activeUser) return;
+    if (!messageStore[activeUser]) messageStore[activeUser] = [];
+    messageStore[activeUser].push(`You: ${text}`);
+    renderMessages();
+    messageInput.value = '';
+
+    const targetUser = Object.values(users).find(u => u.name === activeUser);
+    if (targetUser) {
+      socket.emit('private-message', {
+        to: targetUser.id,
+        message: text
+      });
+    }
+  }
+</script>
 
 </body>
 </html>
